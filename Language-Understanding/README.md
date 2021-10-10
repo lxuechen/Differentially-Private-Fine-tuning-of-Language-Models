@@ -15,7 +15,7 @@ Our implementation is based on [this repo](https://github.com/dayu11/Differentia
 
 ## Organization 
 
-This page introduces the environment we use. You need to install some required packages before running a specific method.
+This page introduces the environment we use. You need to install some packages before running a specific method.
 
 We place the implementation of each method in the corresponding folder. To run a target method, you need to go to its folder and follow the instructions there.
 
