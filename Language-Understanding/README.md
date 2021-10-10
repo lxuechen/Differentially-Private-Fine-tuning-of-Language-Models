@@ -10,7 +10,7 @@ The methods include:
     *   [Compactor](https://arxiv.org/abs/2106.04647)
     *   [LoRA](https://arxiv.org/abs/2106.09685)
 
-We evelate our implementation on language understanding tasks from the [GLUE](https://gluebenchmark.com/) benchmark that have more than 10k training samples (MNLI, QQP, QNLI, and SST-2). 
+Our implementation is based on [this repo](https://github.com/dayu11/Differentially-Private-Deep-Learning/tree/main/language). We evelate our implementation on language understanding tasks from the [GLUE](https://gluebenchmark.com/) benchmark that have more than 10k training samples (MNLI, QQP, QNLI, and SST-2). 
 
 
 ## Organization 
@@ -42,3 +42,9 @@ In addation to the classic [moments accountant](https://arxiv.org/abs/1607.00133
 To install the `prv_accountant` package, go to the folder and run `pip install --editable . --user`.
 
 To enable the half-precision (`--fp16` flag), you need a Volta GPU, e.g., Titan V or Tesla V100.
+
+## Pre-trained Models and Pre-processed Datasets
+
+The data of four tasks are in the `glue_data` folder. They are processed using the instructions in [here](https://github.com/pytorch/fairseq/blob/master/examples/roberta/README.glue.md).
+
+You can download the pre-trained RoBERTa-base and RoBERTa-large models at [here](https://github.com/pytorch/fairseq/tree/master/examples/roberta). Then place the unzipped folders (roberta.base and roberta.large) in this folder.
