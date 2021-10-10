@@ -10,7 +10,7 @@ The methods include:
     *   [Compactor](https://arxiv.org/abs/2106.04647)
     *   [LoRA](https://arxiv.org/abs/2106.09685)
 
-Our implementation is based on [this repo](https://github.com/dayu11/Differentially-Private-Deep-Learning/tree/main/language). We evelate our implementation on language understanding tasks from the [GLUE](https://gluebenchmark.com/) benchmark that have more than 10k training samples (MNLI, QQP, QNLI, and SST-2). 
+Our implementation is based on [this repo](https://github.com/dayu11/Differentially-Private-Deep-Learning/tree/main/language). We evaluate our implementation on language understanding tasks from the [GLUE](https://gluebenchmark.com/) benchmark that have more than 10k training samples (MNLI, QQP, QNLI, and SST-2). 
 
 
 ## Organization 
@@ -37,7 +37,7 @@ apex
 
 Most of the packages can be installed easily via `pip install`. If you have trouble installing the `apex` package, you can install it via [anaconda](https://www.anaconda.com/) following these [instructions](https://anaconda.org/conda-forge/nvidia-apex).
 
-In addation to the classic [moments accountant](https://arxiv.org/abs/1607.00133), we also include an advanced tool [PRV accountant](https://github.com/microsoft/prv_accountant) to analyze the privacy loss.  You can use the flag `--accountant moments` or `--accountant prv`  to switch between these two accountants.
+In addition to the classic [moments accountant](https://arxiv.org/abs/1607.00133), we also include an advanced tool [PRV accountant](https://github.com/microsoft/prv_accountant) to analyze the privacy loss.  You can use the flag `--accountant moments` or `--accountant prv`  to switch between these two accountants.
 
 To install the `prv_accountant` package, go to the folder and run `pip install --editable . --user`.
 
