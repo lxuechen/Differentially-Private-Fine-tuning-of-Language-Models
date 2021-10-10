@@ -5,7 +5,7 @@ First, run the following command.
 pip install --editable . --user
 ```
 
-**Important:** You need to run the above command **every time** when you switch bettwen different methods, otherwise the code from other folders will be executed.
+**Important:** You need to run the above command **every time** when you switch between different methods, otherwise the code from other folders will be executed.
 
 
 Here is an example command to fine-tune the model with DP-Adapter.
