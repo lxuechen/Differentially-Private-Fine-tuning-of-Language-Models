@@ -41,7 +41,7 @@ In addation to the classic [moments accountant](https://arxiv.org/abs/1607.00133
 
 To install the `prv_accountant` package, go to the folder and run `pip install --editable . --user`.
 
-To enable the half-precision (`--fp16` flag), you need a Volta GPU, e.g., Titan V or Tesla V100.
+To enable half-precision (`--fp16` flag), you need a Volta GPU, e.g., Titan V or Tesla V100.
 
 ## Pre-trained Models and Pre-processed Datasets
 
