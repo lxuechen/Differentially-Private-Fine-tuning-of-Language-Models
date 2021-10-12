@@ -45,7 +45,7 @@ def multi_head_attention_forward(query,                           # type: Tensor
 
     if(not ma_module.re_loaded): # load the weight from the pre-trained model
         ma_module.in_proj.weight.data = ma_module.in_proj_weight.data
-        ma_module.in_proj.weight.bias = ma_module.in_proj_bias.data
+        ma_module.in_proj.bias.data = ma_module.in_proj_bias.data
         ma_module.re_loaded = True
 
     acti = ma_module.in_proj(query)
