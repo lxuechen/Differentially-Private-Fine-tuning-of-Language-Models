@@ -123,10 +123,7 @@ def train(args, trainer, task, epoch_itr):
         shuffle=(epoch_itr.epoch >= args.curriculum),
     )
     itr = iterators.GroupedIterator(itr, update_freq)
-    progress = progress_bar.build_progress_bar(
-        args, itr, epoch_itr.epoch, no_progress_bar='simple',
-    )
-    #print('update_freq: ', update_freq) 
+    progress = progress_bar.build_progress_bar(args, itr, epoch_itr.epoch, no_progress_bar='simple')
     extra_meters = collections.defaultdict(lambda: AverageMeter())
     valid_subsets = args.valid_subset.split(',')
     max_update = args.max_update or math.inf
@@ -181,6 +178,7 @@ def train(args, trainer, task, epoch_itr):
     stats = get_training_stats(trainer)
     for k, meter in extra_meters.items():
         stats[k] = meter.avg
+    print('end of training print stats', stats)
     progress.print(stats, tag='train', step=stats['num_updates'])
 
     # reset training meters
