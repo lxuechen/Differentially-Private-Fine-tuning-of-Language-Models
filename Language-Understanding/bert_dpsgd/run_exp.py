@@ -167,7 +167,7 @@ else:
                     metric, output_cmd, output_dir, args.task, sess
         )
     else:
-        print('poly lr decay with warmup')
+        print('fixed lr')
 
         if not args.enable_fp16:
             print("don't enable fp16")
