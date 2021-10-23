@@ -31,6 +31,9 @@ parser.add_argument('--accountant', default='prv', type=str, choices=['moments',
 # --- lxuechen:
 parser.add_argument('--lxuechen_run', action="store_true",
                     help="Switch to run my command without lr schedule and fp16.")
+parser.add_argument('--poly_lr_with_warmup', action="store_true",
+                    help="Turn on warmup + poly decay learning rate schedule. Only useful when `lxuechen_run == True`."
+                         "Ablate where the problem is.")
 # ---
 
 
@@ -120,35 +123,70 @@ if not args.lxuechen_run:
             --max-epoch %d --seed %d  --no-progress-bar --log-interval 100 --no-epoch-checkpoints --no-last-checkpoints --no-best-checkpoints \
             --find-unused-parameters --skip-invalid-size-inputs-valid-test --truncate-sequence --embedding-normalize  \
             --tensorboard-logdir . --bert-pooler --pooler-dropout 0.1 \
-            --best-checkpoint-metric %s --maximize-best-checkpoint-metric %s %s/%s/%s_train_log.txt'%(args.gpu_id, data_dir, output_dir, ckpt_dir,
-                update_freq, args.max_sentences, args.max_tokens, args.arch, apdx, n_classes, args.weight_decay, args.adam_beta2, args.lr, args.sess, args.epoch, args.seed,
-                metric, output_cmd, output_dir, args.task, sess)
+            --best-checkpoint-metric %s --maximize-best-checkpoint-metric %s %s/%s/%s_train_log.txt' % (
+                args.gpu_id, data_dir, output_dir, ckpt_dir,
+                update_freq, args.max_sentences, args.max_tokens, args.arch, apdx, n_classes, args.weight_decay,
+                args.adam_beta2, args.lr, args.sess, args.epoch, args.seed,
+                metric, output_cmd, output_dir, args.task, sess
+    )
 else:
-    # lxuechen: 1) Disable learning rate schedule, 2) disable fp16, 3) adam-eps 1e-8
     print('lxuechen run!!!')
     print(f'clipping norm: {args.clip}')
     time.sleep(5)
-    cmd = 'CUDA_VISIBLE_DEVICES=%d python train.py %s --save-dir %s \
-            --restore-file %s \
-            --max-positions 512 \
-            --update-freq %d \
-            --max-sentences %d --max-tokens %d \
-            --task sentence_prediction \
-            --reset-optimizer --reset-dataloader --reset-meters \
-            --required-batch-size-multiple 1 \
-            --init-token 0 --separator-token 2 \
-            --arch %s \
-            --criterion sentence_prediction %s \
-            --num-classes %d \
-            --dropout 0.1 --attention-dropout 0.1 \
-            --weight-decay %f --optimizer adam --adam-betas "(0.9,%f)" --adam-eps 1e-08 \
-            --clip-norm 0 --validate-interval-updates 1 \
-            --lr-scheduler fixed --lr %f --sess %s \
-            --max-epoch %d --seed %d  --no-progress-bar --log-interval 100 --no-epoch-checkpoints --no-last-checkpoints --no-best-checkpoints \
-            --find-unused-parameters --skip-invalid-size-inputs-valid-test --truncate-sequence --embedding-normalize  \
-            --tensorboard-logdir . --bert-pooler --pooler-dropout 0.1 \
-            --best-checkpoint-metric %s --maximize-best-checkpoint-metric %s %s/%s/%s_train_log.txt'%(args.gpu_id, data_dir, output_dir, ckpt_dir,
-                update_freq, args.max_sentences, args.max_tokens, args.arch, apdx, n_classes, args.weight_decay, args.adam_beta2, args.lr, args.sess, args.epoch, args.seed,
-                metric, output_cmd, output_dir, args.task, sess)
+
+    if args.poly_lr_with_warmup:
+        # lxuechen: disable fp16; set adam-eps to 1e-8.
+        cmd = 'CUDA_VISIBLE_DEVICES=%d python train.py %s --save-dir %s \
+                --restore-file %s \
+                --max-positions 512 \
+                --update-freq %d \
+                --max-sentences %d --max-tokens %d \
+                --task sentence_prediction \
+                --reset-optimizer --reset-dataloader --reset-meters \
+                --required-batch-size-multiple 1 \
+                --init-token 0 --separator-token 2 \
+                --arch %s \
+                --criterion sentence_prediction %s \
+                --num-classes %d \
+                --dropout 0.1 --attention-dropout 0.1 \
+                --weight-decay %f --optimizer adam --adam-betas "(0.9,%f)" --adam-eps 1e-08 \
+                --clip-norm 0 --validate-interval-updates 1 \
+                --lr-scheduler polynomial_decay --lr %f --warmup-ratio 0.06 --sess %s \
+                --max-epoch %d --seed %d  --no-progress-bar --log-interval 100 --no-epoch-checkpoints --no-last-checkpoints --no-best-checkpoints \
+                --find-unused-parameters --skip-invalid-size-inputs-valid-test --truncate-sequence --embedding-normalize  \
+                --tensorboard-logdir . --bert-pooler --pooler-dropout 0.1 \
+                --best-checkpoint-metric %s --maximize-best-checkpoint-metric %s %s/%s/%s_train_log.txt' % (
+                    args.gpu_id, data_dir, output_dir, ckpt_dir,
+                    update_freq, args.max_sentences, args.max_tokens, args.arch, apdx,
+                    n_classes, args.weight_decay, args.adam_beta2, args.lr, args.sess, args.epoch, args.seed,
+                    metric, output_cmd, output_dir, args.task, sess
+        )
+    else:
+        # lxuechen: disable warmup + poly decay; disable fp16; set adam-eps to 1e-8.
+        cmd = 'CUDA_VISIBLE_DEVICES=%d python train.py %s --save-dir %s \
+                --restore-file %s \
+                --max-positions 512 \
+                --update-freq %d \
+                --max-sentences %d --max-tokens %d \
+                --task sentence_prediction \
+                --reset-optimizer --reset-dataloader --reset-meters \
+                --required-batch-size-multiple 1 \
+                --init-token 0 --separator-token 2 \
+                --arch %s \
+                --criterion sentence_prediction %s \
+                --num-classes %d \
+                --dropout 0.1 --attention-dropout 0.1 \
+                --weight-decay %f --optimizer adam --adam-betas "(0.9,%f)" --adam-eps 1e-08 \
+                --clip-norm 0 --validate-interval-updates 1 \
+                --lr-scheduler fixed --lr %f --sess %s \
+                --max-epoch %d --seed %d  --no-progress-bar --log-interval 100 --no-epoch-checkpoints --no-last-checkpoints --no-best-checkpoints \
+                --find-unused-parameters --skip-invalid-size-inputs-valid-test --truncate-sequence --embedding-normalize  \
+                --tensorboard-logdir . --bert-pooler --pooler-dropout 0.1 \
+                --best-checkpoint-metric %s --maximize-best-checkpoint-metric %s %s/%s/%s_train_log.txt' % (
+                    args.gpu_id, data_dir, output_dir, ckpt_dir,
+                    update_freq, args.max_sentences, args.max_tokens, args.arch, apdx,
+                    n_classes, args.weight_decay, args.adam_beta2, args.lr, args.sess, args.epoch, args.seed,
+                    metric, output_cmd, output_dir, args.task, sess
+        )
 
 os.system(cmd)
