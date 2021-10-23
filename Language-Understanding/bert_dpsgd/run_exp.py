@@ -99,6 +99,7 @@ else:
 import time
 if not args.lxuechen_run:
     print('original run!!!')
+    print(f'clipping norm: {args.clip}')
     time.sleep(5)
     cmd = 'CUDA_VISIBLE_DEVICES=%d python train.py %s --save-dir %s --fp16  --fp16-init-scale 4 --threshold-loss-scale 1 --fp16-scale-window 128 \
             --restore-file %s \
@@ -125,6 +126,7 @@ if not args.lxuechen_run:
 else:
     # lxuechen: 1) Disable learning rate schedule, 2) disable fp16, 3) adam-eps 1e-8
     print('lxuechen run!!!')
+    print(f'clipping norm: {args.clip}')
     time.sleep(5)
     cmd = 'CUDA_VISIBLE_DEVICES=%d python train.py %s --save-dir %s \
             --restore-file %s \

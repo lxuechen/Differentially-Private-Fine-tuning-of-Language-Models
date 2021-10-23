@@ -1,9 +1,10 @@
 # Run exact same code but with better hyperparameters.
 pip install --editable . --user
 
+clip=${1:-"0.1"}
 python run_exp.py --gpu_id 0 \
   --task SST-2 \
-  --clip 0.1 \
+  --clip ${clip} \
   --eps 8 \
   --delta 1e-5 \
   --accountant prv \
