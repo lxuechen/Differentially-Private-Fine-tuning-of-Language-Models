@@ -12,4 +12,5 @@ python run_exp.py --gpu_id 0 \
   --epoch 3 \
   --sess dpsgd_debug \
   --to_console \
-  --weight_decay 0.0
+  --weight_decay 0.0 \
+  --lxuechen_run
