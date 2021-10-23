@@ -92,6 +92,11 @@ def main(args, init_distributed=False):
         else:
             valid_losses = [None]
 
+        # lxuechen: --- Pause a little after epoch end.
+        print('On epoch end!')
+        import time; time.sleep(5)
+        # ---
+
         # only use first validation loss to update the learning rate
         lr = trainer.lr_step(epoch_itr.epoch, valid_losses[0])
 
@@ -131,7 +136,6 @@ def train(args, trainer, task, epoch_itr):
     epoch_loss_list = []
 
     for i, samples in enumerate(progress, start=epoch_itr.iterations_in_epoch):
-        #print(len(samples))
         log_output = trainer.train_step(samples)
         if log_output is None:
             continue
@@ -172,8 +176,6 @@ def train(args, trainer, task, epoch_itr):
             break
 
     epoch_loss_list = np.array(epoch_loss_list)
-    #print('epoch loss list shape', epoch_loss_list.shape)
-    #np.save('loss_stats/%s_train_loss.npy'%args.sess, epoch_loss_list)
 
     # log end-of-epoch stats
     stats = get_training_stats(trainer)

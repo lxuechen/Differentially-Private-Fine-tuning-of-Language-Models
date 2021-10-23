@@ -306,8 +306,9 @@ class Trainer(object):
 
         # forward and backward pass
         logging_outputs, sample_sizes, ooms = [], [], 0
-        for i, sample in enumerate(samples):
-            
+        import tqdm
+        for i, sample in tqdm.tqdm(enumerate(samples), desc="one update"):
+
             sample = self._prepare_sample(sample)
             if sample is None:
                 # when sample is None, run forward/backward on a dummy batch
@@ -346,7 +347,7 @@ class Trainer(object):
                         for i, p in enumerate(self.params):
                             flat_g = p.batch_grad.view(sample_size, -1)
                             norms += (torch.norm(flat_g, dim=1)).float()**2
-                        norms = torch.sqrt(norms).half()
+                        norms = torch.sqrt(norms)
                         scale = self.args.clip / norms
                         scale[scale>1] = 1
                         for m in self.model.modules(): # clip and assign gradient
@@ -415,8 +416,7 @@ class Trainer(object):
             for i, p in enumerate(self.params):
                 p.grad /= batch_size
                 sigma = self.args.sigma * self.args.clip
-                p.grad += torch.normal(0, sigma/batch_size, size=p.grad.shape).cuda().half()
-
+                p.grad += torch.normal(0, sigma/batch_size, size=p.grad.shape).cuda()
         
         if ooms > 0 and self._oom_batch is not None:
             self.handle_ooms(ooms)
@@ -490,10 +490,10 @@ class Trainer(object):
                 if(sample_size % bs != 0 and sample_size % bs < 0.95*bs and self.args.sigma >0):
                     print('\nskipping batch with size: ', sample_size, '\n')
                     skip = True
-            
+
+            # lxuechen: This supposedly clips the average gradient. When args.clip_norm == 0, should have no effect.
             grad_norm = self.optimizer.clip_grad_norm(self.args.clip_norm)
             self._prev_grad_norm = grad_norm
-
 
             if(not skip):        
                 # take an optimization step
@@ -540,8 +540,8 @@ class Trainer(object):
 
         self.clear_buffered_stats()
         self.meters['train_wall'].stop()
-        #print('end of training step')
-        #exit()
+
+        print(f'loss: {loss:.4f}, lr: {self.get_lr()}')
         return logging_output
 
     def valid_step(self, sample, raise_oom=False):
